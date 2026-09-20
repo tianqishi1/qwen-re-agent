@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.alibaba.qwen.code.agent.ConfigFileTest
 -------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.395 s -- in com.alibaba.qwen.code.agent.ConfigFileTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.356 s -- in com.alibaba.qwen.code.agent.ConfigFileTest

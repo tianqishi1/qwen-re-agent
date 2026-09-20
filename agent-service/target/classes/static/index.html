@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qwencode 编码 Agent</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">◆</span>
+      <span class="title">Qwencode 编码 Agent</span>
+    </div>
+    <div class="status">
+      <span id="svc-status" class="badge badge-unknown">服务检测中…</span>
+      <span id="exec-status" class="badge badge-unknown">执行层检测中…</span>
+      <span id="model-label" class="model"></span>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="chat">💬 聊天</button>
+    <button class="tab" data-tab="workflow">🔧 工作流</button>
+    <button class="tab" data-tab="files">📁 文件</button>
+  </nav>
+
+  <main class="content">
+
+    <!-- ============ 聊天面板 ============ -->
+    <section id="panel-chat" class="panel active">
+      <div class="chat-layout">
+        <aside class="session-list">
+          <div class="session-head">
+            <span>会话</span>
+            <button id="new-session" class="btn btn-sm" title="新建会话">＋</button>
+          </div>
+          <ul id="session-items"></ul>
+        </aside>
+        <div class="chat-main">
+          <div id="chat-messages" class="messages"></div>
+          <div class="composer">
+            <textarea id="chat-input" rows="3"
+              placeholder="输入想法或任务，例如：帮我写一个 Python 脚本统计文件夹里每个文件的代码行数"></textarea>
+            <div class="composer-bar">
+              <span id="chat-hint" class="hint">Enter 发送，Shift+Enter 换行</span>
+              <button id="chat-send" class="btn btn-primary">发送</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 工作流面板 ============ -->
+    <section id="panel-workflow" class="panel">
+      <div class="wf-layout">
+        <div class="wf-left">
+          <div class="card">
+            <h3>输入想法，自动完成编码</h3>
+            <textarea id="wf-idea" rows="5"
+              placeholder="例如：做一个命令行待办事项工具，支持增删改查和优先级排序，用 Python 实现并写单元测试"></textarea>
+            <div class="wf-options">
+              <span class="opt-label">执行阶段：</span>
+              <label class="check"><input type="checkbox" data-stage="requirement-analysis" checked> 需求拆解</label>
+              <label class="check"><input type="checkbox" data-stage="tech-design" checked> 技术方案</label>
+              <label class="check"><input type="checkbox" data-stage="coding" checked> 开发</label>
+              <label class="check"><input type="checkbox" data-stage="testing" checked> 测试</label>
+              <label class="check"><input type="checkbox" data-stage="deployment" checked> 上线</label>
+              <label class="check"><input type="checkbox" data-stage="operations" checked> 运维</label>
+            </div>
+            <div class="wf-actions">
+              <button id="wf-run" class="btn btn-primary">开始执行</button>
+              <button id="wf-stop" class="btn" disabled>停止</button>
+            </div>
+          </div>
+          <div class="card">
+            <h3>阶段说明</h3>
+            <ul id="stage-desc" class="stage-desc"></ul>
+          </div>
+        </div>
+        <div class="wf-right">
+          <div class="card wf-log-card">
+            <div class="wf-log-head">
+              <h3>执行日志</h3>
+              <span id="wf-progress" class="hint"></span>
+            </div>
+            <div id="wf-stages" class="wf-stages"></div>
+            <div id="wf-log" class="wf-log"></div>
+          </div>
+          <div class="card">
+            <h3>产出物</h3>
+            <ul id="wf-artifacts" class="artifacts"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 文件面板 ============ -->
+    <section id="panel-files" class="panel">
+      <div class="file-layout">
+        <aside class="file-tree">
+          <div class="file-head">
+            <span>工作区</span>
+            <span id="ws-root" class="hint"></span>
+          </div>
+          <div id="file-browser" class="file-browser"></div>
+        </aside>
+        <div class="file-viewer">
+          <div id="file-meta" class="file-meta"></div>
+          <pre id="file-content" class="file-content">选择左侧文件查看内容</pre>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

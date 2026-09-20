@@ -1,0 +1,14 @@
+{
+  "_说明": "在这里写你想固化的修改（例如声音、口头禅、禁忌）。字段与 persona.json 一致，蒸馏时会被自动合并，且永远不会被生成结果覆盖。",
+  "voice": {
+    "signature_phrases": [],
+    "avoid": []
+  },
+  "thinking": {
+    "heuristics": []
+  },
+  "expertise": {
+    "limits": []
+  },
+  "guardrails": []
+}

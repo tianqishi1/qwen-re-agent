@@ -2,7 +2,7 @@ package com.alibaba.qwen.code.agent.tools;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
-import com.alibaba.qwen.code.agent.bridge.PythonBridge;
+import com.alibaba.qwen.code.agent.bridge.ToolBridge;
 import com.alibaba.qwen.code.agent.llm.ToolDefinition;
 
 import java.util.ArrayList;
@@ -17,10 +17,10 @@ import java.util.Map;
 public final class ToolRegistry {
 
     private final Map<String, ToolEntry> tools = new LinkedHashMap<>();
-    private final PythonBridge bridge;
+    private final ToolBridge bridge;
     private final long defaultTimeoutMs;
 
-    public ToolRegistry(PythonBridge bridge, long defaultTimeoutMs) {
+    public ToolRegistry(ToolBridge bridge, long defaultTimeoutMs) {
         this.bridge = bridge;
         this.defaultTimeoutMs = defaultTimeoutMs;
         registerDefaults();
@@ -143,9 +143,7 @@ public final class ToolRegistry {
             }
             String error = resp.getString("error");
             return ToolResult.error(error == null ? "未知错误" : error);
-        } catch (PythonBridge.BridgeTimeoutException e) {
-            return ToolResult.error("工具执行超时: " + e.getMessage());
-        } catch (PythonBridge.BridgeException e) {
+        } catch (RuntimeException e) {
             return ToolResult.error("工具执行失败: " + e.getMessage());
         }
     }

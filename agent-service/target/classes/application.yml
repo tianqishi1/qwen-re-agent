@@ -1,0 +1,29 @@
+server:
+  port: 8800
+  address: 127.0.0.1
+
+spring:
+  application:
+    name: qwencode-agent-service
+  mvc:
+    async:
+      request-timeout: 1800000
+
+qwencode:
+  # 配置文件（绝对路径或相对 agent-service 工作目录）；留空则自动发现（jar 同级 / 项目根 qwencode.properties）
+  config-file: ""
+  executor:
+    # Python 执行层 HTTP 微服务（executor-service）
+    host: 127.0.0.1
+    port: 8910
+    # 是否由 agent-service 自动拉起 executor 子进程（false = 连接外部已启动的 executor）
+    auto-start: true
+    # 启动等待健康检查的超时（秒）
+    startup-timeout-seconds: 30
+  # 会话/工作流并发线程池
+  worker-pool-size: 4
+
+logging:
+  level:
+    root: info
+    com.alibaba.qwen.code.agent: info

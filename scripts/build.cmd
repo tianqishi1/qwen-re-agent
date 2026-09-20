@@ -1,6 +1,7 @@
 @echo off
 rem ============================================================
 rem  Qwencode Coding Agent - build script (Windows)
+rem  Builds parent POM reactor: java-core (engine) + agent-service (Spring Boot)
 rem  Uses bundled portable Maven + system JDK 8
 rem ============================================================
 setlocal
@@ -20,12 +21,14 @@ if not defined JAVA_HOME (
 )
 
 echo Using JAVA_HOME=%JAVA_HOME%
-call "%MAVEN%" -f "%ROOT%\java-core\pom.xml" clean package -DskipTests %*
+call "%MAVEN%" -f "%ROOT%\pom.xml" clean package -DskipTests %*
 if errorlevel 1 (
     echo [ERROR] build failed
     exit /b 1
 )
 
 echo.
-echo Build OK: %ROOT%\java-core\target\qwencode-agent-0.2.0-alpha.jar
+echo Build OK:
+echo   engine jar:  %ROOT%\java-core\target\qwencode-agent-0.2.0-alpha.jar
+echo   service jar: %ROOT%\agent-service\target\qwencode-agent-service-0.3.0.jar
 endlocal

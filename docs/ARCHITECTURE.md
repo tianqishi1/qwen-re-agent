@@ -1,6 +1,6 @@
 # Qwencode 编码 Agent —— 架构设计文档
 
-> 版本：0.2.0-alpha ｜ 日期：2026-09-19 ｜ 状态：已实现并通过端到端验证
+> 版本：0.3.0 ｜ 日期：2026-09-20 ｜ 状态：已实现并通过端到端验证
 
 ---
 
@@ -96,8 +96,10 @@ Java 客户端能力：连接 Qwen Code daemon（REST+SSE）或 legacy CLI 进�
 | llm | `ChatClient` | HTTP(S) 网关：非流式 + SSE 流式、工具调用增量聚合 |
 | llm | `ToolDefinition` | 工具 schema 构造（properties/required/enum） |
 | llm | `ChatResponse` | 响应封装（content/toolCalls/usage） |
-| tools | `ToolRegistry` | 工具定义注册、arguments 解析、委派 PythonBridge、结果渲染 |
-| bridge | `PythonBridge` | 子进程生命周期、JSON-lines 协议、超时与异常 |
+| tools | `ToolRegistry` | 工具定义注册、arguments 解析、委派桥（ToolBridge）、结果渲染 |
+| bridge | `ToolBridge` | 桥抽象接口（call/ping/newToolRegistry/pid/close） |
+| bridge | `PythonBridge` | 子进程生命周期、JSON-lines 协议、超时与异常（CLI 模式） |
+| bridge | `PythonHttpBridge` | HTTP 调用 executor-service（微服务模式） |
 | permission | `PermissionManager` | 三种权限模式 + 危险命令黑名单（Java 侧第一道闸） |
 
 **流式工具调用聚合**（`ChatClient.accumulateToolCalls`）：SSE 分片按
@@ -185,10 +187,12 @@ arguments 增量拼接；最终按 index 序组装 `ToolCall(id, name, arguments
 
 ## 7. 构建与运行
 
-- 构建：`scripts\build.cmd`（portable Maven 3.9.9 + JDK 8，shade 打包可执行 jar）
-- 运行：`scripts\run.cmd [选项]`（`chcp 65001` + jar）
+- 构建：`scripts\build.cmd`（portable Maven 3.9.9 + JDK 8，父 POM reactor：
+  `java-core` shade 可执行 jar + `agent-service` Spring Boot fat jar）
+- CLI 运行：`scripts\run.cmd [选项]`（`chcp 65001` + jar，stdio 子进程执行层）
+- Web 运行：`scripts\start-service.cmd` / `scripts\stop-service.cmd`（见第 10 章）
 - 测试：
-  - Java：`mvn test`（8 个核心单测 + 1 个桥接联调）
+  - Java：`mvn -f java-core/pom.xml test`（21 个：ConfigFile 5 + Core 8 + LoopGuard 7 + 桥联调 1）
   - Python：`python -m unittest discover -s tests`（13 个用例，含协议冒烟）
   - 端到端：`scripts\mock_llm.py` 本地 mock 网关 + 真实 agent 循环（读→写→改→总结）
 
@@ -293,3 +297,70 @@ LLM 决策 → 工具调用（name + args）
 5. **会话持久化**：当前内存会话；上游支持会话恢复/快照，后续可序列化 `Session`。
 6. **工作流人工确认点**：当前全自动执行；后续可引入 plan mode 语义
    （enterPlanMode/exitPlanMode），在方案/开发阶段前暂停等待用户确认。
+
+---
+
+## 10. 微服务化拆分（agent-service + executor-service）
+
+> 版本：0.3.0 ｜ 新增：2026-09-20
+
+第 2 章的单进程模型（CLI + stdio 子进程）演化为三组件微服务拓扑：
+
+```
+浏览器（前端页面 index.html / app.js / style.css，http://127.0.0.1:8800/）
+   │  REST + SSE（fetch / ReadableStream 解析）
+   ▼
+agent-service (Spring Boot 2.7.5, JDK 8, 端口 8800, 仅监听 127.0.0.1)
+   ├─ controller/   Chat / Workflow / File / Meta
+   ├─ service/core/ AgentEngine（装配 ChatClient + ToolRegistry + 编排器）
+   ├─ service/session/ SessionManager（会话注册表，会话内串行）
+   ├─ service/executor/ ExecutorManager（executor 生命周期管理）
+   └─ AgentEventListener → SSE 事件流
+   │  HTTP（POST /tool · GET /health · POST /shutdown）
+   ▼
+executor-service (python-runtime/qwen_agent_runtime/http_server.py, 端口 8910)
+   └─ ThreadingHTTPServer → dispatch(sandbox, tool, params)（复用 stdio 模式全部工具）
+```
+
+### 10.1 关键设计
+
+| 关注点 | 设计 | 说明 |
+| ------ | ---- | ---- |
+| 执行层解耦 | `bridge/ToolBridge` 接口 | `PythonBridge`（stdio 子进程，CLI）与 `PythonHttpBridge`（HTTP，微服务）可互换；`ToolRegistry` 只依赖接口 |
+| 会话模型 | `SessionManager` + `AgentSession` | 每会话独立 `Session` + `AgentLoop` + `ToolRegistry`（共享同一 HTTP 桥）；会话内 `tryAcquire` 串行，跨会话并行 |
+| 流式推送 | `core/AgentEventListener` | `AgentLoop` / `WorkflowOrchestrator` 在工具调用、阶段切换处回调；agent-service 转发为 SSE 事件（`tool_call` / `tool_result` / `text` / `stage` / `done`） |
+| executor 生命周期 | `ExecutorManager` | auto-start 模式：拉起 `python -m qwen_agent_runtime.http_server` → 轮询 `/health` 就绪 → 关闭时 `POST /shutdown` + destroy；外部模式：仅连接 |
+| 安全边界 | 双沙箱 | Web 服务仅监听 127.0.0.1；文件浏览 API 路径限制在工作区内（禁 `..`、绝对路径）；executor 沿用路径沙箱 + 危险命令黑名单 |
+| 并发 | 线程池 | agent-service 用固定线程池执行 AgentLoop（默认 4），SSE emitter 非阻塞 |
+
+### 10.2 SSE 事件契约
+
+```
+POST /api/chat/stream {message, sessionId?}
+  event: tool_call      data: {"tool":"read_file","args":"{...}"}
+  event: tool_result    data: {"tool":"read_file","success":true,"costMs":14,"preview":"..."}
+  event: text           data: "最终回复文本"
+  event: done           data: {"ok":true,"sessionId":"...","reply":"...","toolCalls":[...]}
+
+POST /api/workflow/stream {idea, stages?}
+  event: stage          data: {"stage":"requirement-analysis","status":"stage_start|stage_end|stage_failed","detail":"..."}
+  event: tool_call / tool_result   （同上）
+  event: done           data: {"ok":true,"stages":[{"stage":"...","success":true,"artifacts":[...],"costSeconds":N}]}
+```
+
+### 10.3 与 CLI 模式的关系
+
+- 两者共享同一个 `java-core` 引擎与 `python-runtime` 工具集；
+- CLI：`PythonBridge`（stdio），单进程即可运行；
+- Web：`PythonHttpBridge`（HTTP），`ExecutorManager` 自动拉起 executor；
+- 测试基线共用：`mvn -f java-core/pom.xml test`（21）+ `python -m unittest discover -s tests`（13）。
+
+### 10.4 启动与验证
+
+```
+scripts\build.cmd                 # 父 POM reactor：java-core + agent-service
+scripts\start-service.cmd         # 启动 8800（自动拉起 8910）
+scripts\stop-service.cmd          # 停止 8800 + 8910
+curl http://127.0.0.1:8800/api/health
+curl -X POST http://127.0.0.1:8800/api/chat -H "Content-Type: application/json" -d "{\"message\":\"hi\",\"sessionId\":null}"
+```

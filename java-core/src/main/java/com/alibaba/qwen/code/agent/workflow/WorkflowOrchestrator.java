@@ -1,6 +1,7 @@
 package com.alibaba.qwen.code.agent.workflow;
 
 import com.alibaba.qwen.code.agent.config.AgentConfig;
+import com.alibaba.qwen.code.agent.core.AgentEventListener;
 import com.alibaba.qwen.code.agent.core.AgentLoop;
 import com.alibaba.qwen.code.agent.core.Session;
 import com.alibaba.qwen.code.agent.llm.ChatClient;
@@ -27,6 +28,8 @@ public final class WorkflowOrchestrator {
     private final ChatClient chatClient;
     private final PythonBridgeHandle bridge;
     private final int maxStages;
+    /** 执行过程事件监听器（null = 不推送，供 SSE 流式）。 */
+    private final AgentEventListener listener;
 
     /** Python 桥的窄接口，避免编排器直接依赖桥实现细节。 */
     public interface PythonBridgeHandle {
@@ -35,15 +38,22 @@ public final class WorkflowOrchestrator {
 
     public WorkflowOrchestrator(AgentConfig config, ChatClient chatClient,
                                 PythonBridgeHandle bridge) {
-        this(config, chatClient, bridge, 8);
+        this(config, chatClient, bridge, 8, null);
     }
 
     public WorkflowOrchestrator(AgentConfig config, ChatClient chatClient,
                                 PythonBridgeHandle bridge, int maxStages) {
+        this(config, chatClient, bridge, maxStages, null);
+    }
+
+    public WorkflowOrchestrator(AgentConfig config, ChatClient chatClient,
+                                PythonBridgeHandle bridge, int maxStages,
+                                AgentEventListener listener) {
         this.config = config;
         this.chatClient = chatClient;
         this.bridge = bridge;
         this.maxStages = maxStages;
+        this.listener = listener;
     }
 
     /**
@@ -75,9 +85,17 @@ public final class WorkflowOrchestrator {
             System.out.println("══════════════════════════════════════════");
             System.out.println("▶ 阶段 [" + skill.name() + "]  " + skill.description());
             System.out.println("══════════════════════════════════════════");
+            if (listener != null) {
+                listener.onStage(skill.name(), "stage_start", skill.description());
+            }
 
             StageResult result = executeStage(skill, context.toString());
             results.add(result);
+            if (listener != null) {
+                listener.onStage(skill.name(),
+                        result.success ? "stage_end" : "stage_failed",
+                        result.success ? result.summary : result.summary);
+            }
 
             // 传递上下文给下一阶段
             context.append("\n[阶段 ").append(skill.name()).append(" 产出]\n");
@@ -102,7 +120,7 @@ public final class WorkflowOrchestrator {
         String stagePrompt = buildStagePrompt(skill, context);
         AgentLoop loop = new AgentLoop(config, chatClient, tools, permissions, session,
                 skill.systemPrompt(), skill.allowedTools(), skill.disallowedTools(),
-                skill.maxTurns(), guard);
+                skill.maxTurns(), guard, listener);
 
         long t0 = System.currentTimeMillis();
         String answer;

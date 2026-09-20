@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * 响应 <code>{"id":1,"ok":true,"result":{...}}</code> 或
  * <code>{"id":1,"ok":false,"error":"..."}</code>。</p>
  */
-public final class PythonBridge implements AutoCloseable {
+public final class PythonBridge implements ToolBridge {
 
     private final Process process;
     private final Writer stdin;

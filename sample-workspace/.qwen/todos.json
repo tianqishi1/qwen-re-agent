@@ -1,32 +1,44 @@
 [
   {
-    "id": "engine",
-    "content": "编写核心游戏逻辑引擎（纯JS，可测试）",
-    "status": "completed",
+    "id": "1",
+    "content": "搭建工程骨架与基础工具层（路径/JSON/原子写/HTML 转文本）",
+    "status": "in_progress",
     "blockedBy": []
   },
   {
-    "id": "ui",
-    "content": "编写页面结构与样式（HTML/CSS）",
-    "status": "completed",
+    "id": "2",
+    "content": "实现知识库导入：文档/书籍(docx、epub、pdf可选)/链接/经历/语录 → 抽取+切片+入库",
+    "status": "pending",
     "blockedBy": []
   },
   {
-    "id": "main",
-    "content": "编写渲染、输入与主循环（main.js）",
-    "status": "completed",
+    "id": "3",
+    "content": "实现风格与思维分析 + BM25 检索（中英文二元切分）",
+    "status": "pending",
     "blockedBy": []
   },
   {
-    "id": "test",
-    "content": "编写并运行单元测试、语法检查",
-    "status": "completed",
+    "id": "4",
+    "content": "实现蒸馏：生成 SKILL.md / persona.json / playbook / 提示词模板 / 证据包",
+    "status": "pending",
     "blockedBy": []
   },
   {
-    "id": "docs",
-    "content": "补充 README 使用说明",
-    "status": "completed",
+    "id": "5",
+    "content": "实现运行时：ask / chat（访谈·委托·挑剔·讲解四种模式，LLM 优先、离线兜底）",
+    "status": "pending",
+    "blockedBy": []
+  },
+  {
+    "id": "6",
+    "content": "CLI 串起来 + 示例知识库 + 单元测试 + README",
+    "status": "pending",
+    "blockedBy": []
+  },
+  {
+    "id": "7",
+    "content": "端到端验证：走通 new→add→distill→search→ask→chat 全流程",
+    "status": "pending",
     "blockedBy": []
   }
 ]

@@ -44,6 +44,8 @@ public final class AgentLoop {
     private final int maxTurns;
     /** 死循环/停滞防护（null = 默认实例）。 */
     private final LoopGuard guard;
+    /** 执行过程事件监听器（null = 不推送，供 SSE 流式；可运行期替换）。 */
+    private volatile AgentEventListener listener;
 
     /** 本轮工具调用 trace（输入 + 输出）。 */
     private final List<ToolCallTrace> toolTraces = new ArrayList<>();
@@ -51,13 +53,22 @@ public final class AgentLoop {
     public AgentLoop(AgentConfig config, ChatClient chatClient,
                      ToolRegistry tools, PermissionManager permissions, Session session) {
         this(config, chatClient, tools, permissions, session,
-                null, null, null, 0, new LoopGuard("main"));
+                null, null, null, 0, new LoopGuard("main"), null);
     }
 
     public AgentLoop(AgentConfig config, ChatClient chatClient,
                      ToolRegistry tools, PermissionManager permissions, Session session,
                      String stageSystemPrompt, List<String> allowedTools,
                      List<String> disallowedTools, int maxTurns, LoopGuard guard) {
+        this(config, chatClient, tools, permissions, session,
+                stageSystemPrompt, allowedTools, disallowedTools, maxTurns, guard, null);
+    }
+
+    public AgentLoop(AgentConfig config, ChatClient chatClient,
+                     ToolRegistry tools, PermissionManager permissions, Session session,
+                     String stageSystemPrompt, List<String> allowedTools,
+                     List<String> disallowedTools, int maxTurns, LoopGuard guard,
+                     AgentEventListener listener) {
         this.config = config;
         this.chatClient = chatClient;
         this.tools = tools;
@@ -70,6 +81,12 @@ public final class AgentLoop {
                 ? null : Collections.unmodifiableList(new ArrayList<>(disallowedTools));
         this.maxTurns = maxTurns;
         this.guard = guard;
+        this.listener = listener;
+    }
+
+    /** 运行期替换事件监听器（同一会话串行执行时安全）。 */
+    public void setListener(AgentEventListener listener) {
+        this.listener = listener;
     }
 
     /** 工具调用输入输出记录。 */
@@ -127,6 +144,9 @@ public final class AgentLoop {
 
             if (!resp.hasToolCalls()) {
                 finalAnswer = resp.content();
+                if (listener != null && finalAnswer != null && !finalAnswer.isEmpty()) {
+                    listener.onText(finalAnswer);
+                }
                 guard.recordTurn(true, false);
                 break;
             }
@@ -167,11 +187,18 @@ public final class AgentLoop {
                 }
 
                 System.out.println("[工具] " + name + " " + truncate(args, 200));
+                if (listener != null) {
+                    listener.onToolCall(name, truncate(args, 2000));
+                }
                 long t0 = System.currentTimeMillis();
                 ToolRegistry.ToolResult result = tools.invoke(name, args);
                 long cost = System.currentTimeMillis() - t0;
                 System.out.println("[工具] 完成 " + name + " (" + cost + " ms, "
                         + (result.success() ? "成功" : "失败") + ")");
+                if (listener != null) {
+                    listener.onToolResult(name, result.success(), cost,
+                            truncate(result.content(), 400));
+                }
 
                 // 记录输入输出 trace
                 toolTraces.add(new ToolCallTrace(name, args, result.success(),

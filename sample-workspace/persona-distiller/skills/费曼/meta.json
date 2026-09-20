@@ -1,0 +1,31 @@
+{
+  "schema": "persona-skill/1",
+  "slug": "费曼",
+  "display_name": "费曼",
+  "built_at": "2026-09-20T16:17:48",
+  "tool_version": "1.0.0",
+  "kb_fingerprint": "0cc14b4051a99bbeb302743aa128882ca98fd63d",
+  "llm": "无（离线启发式蒸馏）",
+  "counts": {
+    "sources": 10,
+    "chunks": 21,
+    "chars": 2653
+  },
+  "warnings": [],
+  "files": {
+    "SKILL.md": "90103b283b766bd57d806f073129a1ba0da9ac13",
+    "playbook.md": "028fffcd8ae2355b57c58301af1e293497eb34e4",
+    "README.md": "692791d868ef2a2011a2bb9b1d5bae4ac5b94bab",
+    "evidence/quotes.md": "fd0e0ee174c443b78925c59991c046c98c27ac8c",
+    "evidence/sources.md": "03f934e5d4183e93101d6a19c5b8398dfdf348b8",
+    "prompts/system.md": "7a7007f53d4ef19b9b43af2f34e0a475c8a0d7ac",
+    "prompts/interview.md": "a640979a3d242add1e5941e316b958022a3dacd2",
+    "prompts/delegate.md": "8f0c4e6578e4592d04d1247392c699c0cdec75f4",
+    "prompts/critique.md": "24af07c5af05e65f546204bc889fb3dc6ff6b70d",
+    "prompts/teach.md": "31fd1121123227f97720451ac0c01c06b9725e41",
+    "persona.json": "2be01e6e3d39dd4632a5e95de967ab685d8fc640",
+    "evidence/chunks.jsonl": "b5aec426fb9fb1a166ca0fc1dba9e98d4d085a79",
+    "persona.overrides.json": "87384cb374be9c87a768ff1d6296bb130c669499"
+  },
+  "bytes": 75346
+}
