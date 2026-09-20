@@ -1,0 +1,4 @@
+com\alibaba\qwen\code\agent\CoreUnitTest.class
+com\alibaba\qwen\code\agent\PythonBridgeIntegrationTest.class
+com\alibaba\qwen\code\agent\LoopGuardTest.class
+com\alibaba\qwen\code\agent\ConfigFileTest.class

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "engine",
+    "content": "编写核心游戏逻辑引擎（纯JS，可测试）",
+    "status": "completed",
+    "blockedBy": []
+  },
+  {
+    "id": "ui",
+    "content": "编写页面结构与样式（HTML/CSS）",
+    "status": "completed",
+    "blockedBy": []
+  },
+  {
+    "id": "main",
+    "content": "编写渲染、输入与主循环（main.js）",
+    "status": "completed",
+    "blockedBy": []
+  },
+  {
+    "id": "test",
+    "content": "编写并运行单元测试、语法检查",
+    "status": "completed",
+    "blockedBy": []
+  },
+  {
+    "id": "docs",
+    "content": "补充 README 使用说明",
+    "status": "completed",
+    "blockedBy": []
+  }
+]

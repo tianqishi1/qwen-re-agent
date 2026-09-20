@@ -1,0 +1,66 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< com.alibaba:qwencode-agent >---------------------
+[INFO] Building qwencode-agent 0.2.0-alpha
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ qwencode-agent ---
+[INFO] Deleting D:\agent\qwen����agent\java-core\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ qwencode-agent ---
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ qwencode-agent ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 13 source files with javac [debug target 1.8] to target\classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ qwencode-agent ---
+[INFO] skip non existing resourceDirectory D:\agent\qwen����agent\java-core\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ qwencode-agent ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 3 source files with javac [debug target 1.8] to target\test-classes
+[INFO] /D:/agent/qwen����agent/java-core/src/test/java/com/alibaba/qwen/code/agent/CoreUnitTest.java: D:\agent\qwen����agent\java-core\src\test\java\com\alibaba\qwen\code\agent\CoreUnitTest.javaʹ����δ�����򲻰�ȫ�Ĳ�����
+[INFO] /D:/agent/qwen����agent/java-core/src/test/java/com/alibaba/qwen/code/agent/CoreUnitTest.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:unchecked ���±��롣
+[INFO] 
+[INFO] --- surefire:3.5.4:test (default-test) @ qwencode-agent ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.alibaba.qwen.code.agent.ConfigFileTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.498 s -- in com.alibaba.qwen.code.agent.ConfigFileTest
+[INFO] Running com.alibaba.qwen.code.agent.CoreUnitTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.046 s -- in com.alibaba.qwen.code.agent.CoreUnitTest
+[INFO] Running com.alibaba.qwen.code.agent.PythonBridgeIntegrationTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.435 s -- in com.alibaba.qwen.code.agent.PythonBridgeIntegrationTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ qwencode-agent ---
+[INFO] Building jar: D:\agent\qwen����agent\java-core\target\qwencode-agent-0.2.0-alpha.jar
+[INFO] 
+[INFO] --- shade:3.6.0:shade (default) @ qwencode-agent ---
+[INFO] Including com.alibaba.fastjson2:fastjson2:jar:2.0.60 in the shaded jar.
+[WARNING] fastjson2-2.0.60.jar, qwencode-agent-0.2.0-alpha.jar define 1 overlapping resource: 
+[WARNING]   - META-INF/MANIFEST.MF
+[WARNING] maven-shade-plugin has detected that some files are
+[WARNING] present in two or more JARs. When this happens, only one
+[WARNING] single version of the file is copied to the uber jar.
+[WARNING] Usually this is not harmful and you can skip these warnings,
+[WARNING] otherwise try to manually exclude artifacts based on
+[WARNING] mvn dependency:tree -Ddetail=true and the above output.
+[WARNING] See https://maven.apache.org/plugins/maven-shade-plugin/
+[INFO] Replacing original artifact with shaded artifact.
+[INFO] Replacing D:\agent\qwen����agent\java-core\target\qwencode-agent-0.2.0-alpha.jar with D:\agent\qwen����agent\java-core\target\qwencode-agent-0.2.0-alpha-shaded.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  6.401 s
+[INFO] Finished at: 2026-09-19T18:39:54+08:00
+[INFO] ------------------------------------------------------------------------

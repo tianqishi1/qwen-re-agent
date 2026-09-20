@@ -1,0 +1,5 @@
+# Created at 2026-09-19T21:13:44.508
+Boot Manifest-JAR contains absolute paths in classpath 'D:\agent\qwen编码agent\java-core\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>贪吃蛇 · Snake</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="app">
+  <header class="hud">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">🐍</span>
+      <div>
+        <h1>贪吃蛇</h1>
+        <p class="tagline">方向键 / WASD 控制 · 空格暂停</p>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><span class="label">得分</span><strong id="score">0</strong></div>
+      <div class="stat"><span class="label">最高</span><strong id="best">0</strong></div>
+      <div class="stat"><span class="label">等级</span><strong id="level">1</strong></div>
+    </div>
+  </header>
+
+  <div class="stage">
+    <div class="board-wrap">
+      <canvas id="board" width="400" height="400" aria-label="贪吃蛇游戏棋盘"></canvas>
+      <div id="overlay" class="overlay">
+        <h2 id="overlay-title">准备开始</h2>
+        <p id="overlay-text">方向键 / WASD 移动，空格暂停</p>
+        <button type="button" id="overlay-btn" class="btn primary">开始游戏</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button type="button" id="pause-btn" class="btn">暂停</button>
+    <button type="button" id="restart-btn" class="btn">重新开始</button>
+    <label class="toggle"><input type="checkbox" id="wrap-toggle"> 穿墙模式</label>
+    <label class="toggle"><input type="checkbox" id="sound-toggle" checked> 音效</label>
+  </div>
+
+  <div class="dpad" aria-label="方向控制">
+    <button type="button" class="dpad-btn up" data-dir="up" aria-label="上">▲</button>
+    <button type="button" class="dpad-btn left" data-dir="left" aria-label="左">◀</button>
+    <button type="button" class="dpad-btn down" data-dir="down" aria-label="下">▼</button>
+    <button type="button" class="dpad-btn right" data-dir="right" aria-label="右">▶</button>
+  </div>
+
+  <footer class="hint">
+    吃掉红色果实得分 · 每 5 分升 1 级，速度加快 · <kbd>R</kbd> 重开 · 撞墙或咬到自己即结束
+  </footer>
+</main>
+
+<script src="js/engine.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
